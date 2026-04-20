@@ -1,4 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  Notification,
+} = require("electron");
 const path = require("path");
 const fs = require("fs").promises;
 
@@ -40,7 +46,7 @@ ipcMain.on("window:confirm-close", (event, allow) => {
     win.close();
   }
 });
-ipcMain.on("toast", (_event, message, type) => {
+ipcMain.on("window:toast", (_event, message, type) => {
   const n = new Notification({
     title: "Notification",
     subtitle: type,
