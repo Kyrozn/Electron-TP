@@ -1,0 +1,33 @@
+{
+  "name": "markdownitor-desktop",
+  "version": "1.0.0",
+  "description": "TP Electron — base pour l'intégration",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"npm run dev --prefix app\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "build": "npm run build --prefix app",
+    "pack": "npm run build && electron-builder --dir"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.0.0",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.tp.markdownitor",
+    "productName": "Markdownitor",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "electron/**/*",
+      "app/dist/**/*"
+    ],
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg" },
+    "linux": { "target": "AppImage" }
+  }
+}

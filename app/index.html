@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markdownitor</title>
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Barre de titre personnalisée (utile sous Electron avec frame: false) -->
+    <header id="titlebar">
+      <div id="titlebar-left">
+        <span id="app-icon">📝</span>
+        <span id="app-title">Markdownitor</span>
+        <span id="file-name" class="muted">— Sans titre</span>
+        <span id="unsaved-dot" class="hidden">●</span>
+      </div>
+      <div id="titlebar-center">
+        <!-- Zone draggable sous Electron -->
+      </div>
+      <div id="titlebar-right">
+        <!-- Les boutons natifs fenêtre apparaîtront ici sous Electron -->
+      </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div id="toolbar">
+      <div class="toolbar-group">
+        <button class="tool-btn" data-action="open" title="Ouvrir (Ctrl+O)">
+          <svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          Ouvrir
+        </button>
+        <button class="tool-btn" data-action="save" title="Enregistrer (Ctrl+S)">
+          <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+          Enregistrer
+        </button>
+        <button class="tool-btn" data-action="save-as" title="Enregistrer sous (Ctrl+Shift+S)">
+          <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/><text x="12" y="10" font-size="6" text-anchor="middle" fill="white">+</text></svg>
+          Sous…
+        </button>
+      </div>
+
+      <div class="toolbar-separator"></div>
+
+      <div class="toolbar-group">
+        <button class="tool-btn icon-only" data-format="bold" title="Gras (Ctrl+B)">
+          <strong>B</strong>
+        </button>
+        <button class="tool-btn icon-only" data-format="italic" title="Italique (Ctrl+I)">
+          <em>I</em>
+        </button>
+        <button class="tool-btn icon-only" data-format="code" title="Code inline">
+          <code>`</code>
+        </button>
+        <button class="tool-btn icon-only" data-format="link" title="Lien">
+          <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+        </button>
+        <button class="tool-btn icon-only" data-format="h1" title="Titre H1">H1</button>
+        <button class="tool-btn icon-only" data-format="h2" title="Titre H2">H2</button>
+        <button class="tool-btn icon-only" data-format="h3" title="Titre H3">H3</button>
+        <button class="tool-btn icon-only" data-format="ul" title="Liste à puces">
+          <svg viewBox="0 0 24 24"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg>
+        </button>
+        <button class="tool-btn icon-only" data-format="codeblock" title="Bloc de code">
+          <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+        </button>
+      </div>
+
+      <div class="toolbar-separator"></div>
+
+      <div class="toolbar-group">
+        <button class="tool-btn icon-only toggle-btn" id="btn-split" data-view="split" title="Vue partagée" aria-pressed="true">
+          <svg viewBox="0 0 24 24"><path d="M3 3h8v18H3zM13 3h8v18h-8z"/></svg>
+        </button>
+        <button class="tool-btn icon-only toggle-btn" id="btn-editor" data-view="editor" title="Vue éditeur seul">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </button>
+        <button class="tool-btn icon-only toggle-btn" id="btn-preview" data-view="preview" title="Vue prévisualisation">
+          <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        </button>
+      </div>
+
+      <div class="toolbar-spacer"></div>
+
+      <div class="toolbar-group">
+        <button class="tool-btn" id="btn-theme" data-action="theme" title="Changer le thème">
+          <svg viewBox="0 0 24 24"><path d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zm-2 5.79V18h-3.52L12 20.48 9.52 18H6v-3.52L3.52 12 6 9.52V6h3.52L12 3.52 14.48 6H18v3.52L20.48 12 18 14.48zM12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5V7z"/></svg>
+          Thème
+        </button>
+      </div>
+
+      <!-- Input caché pour l'ouverture de fichier (workaround navigateur) -->
+      <input type="file" id="file-input" accept=".md,.txt,.markdown" style="display:none" />
+    </div>
+
+    <!-- Zone principale -->
+    <div id="workspace" class="view-split">
+      <div id="editor-pane">
+        <textarea
+          id="editor"
+          spellcheck="false"
+          placeholder="Commencez à écrire du Markdown ici…"
+        ></textarea>
+      </div>
+      <div id="divider"></div>
+      <div id="preview-pane">
+        <div id="preview"></div>
+      </div>
+    </div>
+
+    <!-- Barre de statut -->
+    <footer id="statusbar">
+      <div id="status-left">
+        <span id="cursor-pos">Ln 1, Col 1</span>
+        <span class="status-sep">|</span>
+        <span id="word-count">0 mots</span>
+        <span class="status-sep">|</span>
+        <span id="char-count">0 caractères</span>
+      </div>
+      <div id="status-center">
+        <span id="web-warning" class="warning-badge">
+          ⚠ Mode navigateur — accès fichier limité
+        </span>
+      </div>
+      <div id="status-right">
+        <span id="encoding">UTF-8</span>
+        <span class="status-sep">|</span>
+        <span id="line-ending">LF</span>
+        <span class="status-sep">|</span>
+        <span id="syntax-mode">Markdown</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Dialogue "À propos" (bonus UX) -->
+  <div id="about-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>📝 Markdownitor</h2>
+      <p>Éditeur Markdown conçu comme base de TP pour l'intégration Electron/Tauri.</p>
+      <p class="muted">Version 1.0.0 — Web</p>
+      <div class="modal-notice">
+        <strong>Limitations actuelles (mode navigateur)</strong>
+        <ul>
+          <li>Impossible d'ouvrir / enregistrer directement sur le disque</li>
+          <li>Pas de menus natifs ni raccourcis système</li>
+          <li>Pas de notifications OS</li>
+          <li>Pas de zone de notification (system tray)</li>
+          <li>Fermez l'onglet → perdez votre travail</li>
+        </ul>
+        <p>→ Intégrez Electron pour lever ces limitations !</p>
+      </div>
+      <button id="about-close">Fermer</button>
+    </div>
+  </div>
+
+  <div id="modal-overlay" class="hidden"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
